@@ -1,0 +1,49 @@
+Nume: Girlea Anana Catalina
+Grupa: 333CA
+
+ALGORITMI PARALELI SI DISTRIBUIT
+Tema 3 Calcule colaborative in sisteme distribuite
+
+In cadrul acestei teme a trebuit sa implementam un program distribuit in MPI 
+in care procesele sunt grupate intr-o topologie formata din clustere si 
+procese worker. Pe tot parcursul temei m-am folosit de functiile 
+"MPI_Send" si "MPI_Recv" pentru trimiterea informatiilor intre procese.
+
+Datele de intrare trebuie citite din fisierele de tipul clusterX.txt, unde 
+X reprezinta un numar de la 0 la 3. Am realizat acest lucru folosindu-ma de 
+functia "read_neighbours" cu semnatura "void read_neighbours(int rank)" le 
+care am luat-o din scheletul laboratorului 10.
+
+Pentru prima cerinta a temei a trebuit sa stabiliom topologia conform 
+desenului din cerinta. 
+
+Am facut acest lucru prin crearea unui vectori de parinti "vect_parinti" in 
+care am retinut parintele fiecarui proces. Pentru polularea corecta a 
+vectorului am urmarit ordinea:
+0 -> 1 -> 2 -> 3 -> 0 
+cu ajutorul functiilor "MPI_Send" si "MPI_Recv". Dupa prima parcurgere unde am 
+ciitit informatiile din fisiere si am stabilit parintii fiecarui proces am 
+mai parcurs inca o data topologia si am transmis fiecarui proces topologia 
+finala si am afisat-o pe ecran.
+
+Pentru a doua cerinta a temei a trebuit sa realizam calculele. 
+
+Am facut acest lucru prin parcurgerea topologiei in ordinea:
+0 -> 1 -> 2 -> 3 -> 0
+unde pentru fiecare proces lider am vizitat procesele worker ale acestuia unde 
+am calculat noile valori ale vectorului "v". Pentru fiecare proces worker am 
+calculat un "start_index" si un "end_index" de care m-am folosit pentru a le 
+specifica portiunea din vector pe care trebuie sa o modifice.
+
+Pentru a treia cerinta a temei a trebuit sa intrerupem legatura dintre 
+nodurile 0 si 1 si sa refacem exercitiile anterioare tinand cont de noua 
+restritie. 
+
+Am facut acest lucru prin schimbarea ordinii de trimitere ale pachetelor in 
+cadrul tolologiei. Noua ordine a devenit:
+0 -> 3 -> 2 -> 1 -> 2 -> 3 -> 0
+Logica a ramas la fel ca mai sus, am creat topologia si am calculat noul 
+vector cu ajutorul proceselor worker folosindu-ma de
+- vectorul de parinti pentru stocarea informatiei
+- functiile "MPI_Send" si "MPI_Recv" pentru transmiterea informatiilor intre procese
+- "start_index" si "end_index" pentru alocarea portiunii de calcul pentru fiecare worker

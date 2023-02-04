@@ -1,0 +1,62 @@
+Nume: Girlea Anana Catalina
+Grupa: 333CA
+
+APD Tema 2
+
+In cadrul acetei teme am creat 3 clase: Tema2, OrderTask si ProducTask.
+
+Implementarea rezolvarii:
+
+Citirea comenzilor din fisierul orders.txt
+
+Pentru citirea comenzilor (orders) am folosit un pool the maxNoOfThreads si am
+folosit aceasi variabila maxNoOfThreads ca si pas in citirea comnezilor.
+
+De exemplu consideram  maxNoOfThreads = 7
+T1 va citi comezile 1, 1+7=8, 15, 22 etc
+T2 va citi comenzile 2, 9, 16, 23 etc
+T3 va citi comenzile 3, 10, 17 etc
+
+Dezavantajul acestei metode este ca fiecare thread va trebui sa citeasca
+fisierul de comenzi pana la final pentru a se opri.
+
+Prelucrarea comenzilor
+
+Cele  maxNoOfThreads vor stoca local comenzile pe care le-au citit intr-o map
+si vor proceda la lansarea the thread-uride level 2 pentru prelucrarea fiecarui
+produs. Astfel un thread the level 1 va lansa un numar de noOfProducts threads
+de level 2 pasand si numarul de ordine al produsului ce trebuie cautat in
+order_products.
+
+Pentru a ne asigura ca avem un numar maxim de maxNoOfThreads the threads the
+level 2 vom recurge la folosirea unui semaphore de capacitate maxNoOfThreads,
+astfel incat fiecare thread the level 2 va trebui sa obtina accessul la
+semaphore pentru a rula, altfel v-a trebui sa astepte.
+
+De exemplu:
+T1 are stocat local o_uprxb6hwpb,83 in map
+T1 va lansa 83 de threads de level 2 pasind 10 si semaphore(maxNoOfThreads),
+unde 10 reprezinta al 10 produs din comanda.L2T1 va trebui sa acquire
+semaphorul inainte de a rula sau sa astepte daca nu exista capacitate.
+O data ce L2T1 va putea rula va cauta in fisierul order_product.txt aparitia
+cu numarul 10 a order_id si va citit liniape care o va si scrie in fisierul
+de output.
+
+O data ce un thread de level 2 va termina de procesat va elibera semaphorul
+pentru a lasa celelalte threaduri sa poatarula si ele. Pentru a fi siguri ca
+va functiona corect, semaphorul este initializat si pasat din programul
+principal, intii la threadurile de level 1 dar ca nu au nevoie de el,
+iar L1 il va pasa la L2.
+
+Finalizarea comenzii:
+
+Pentru a fi sigur ca toate L2 threads s-au executat, L1 thread va itera prin
+L2 threads lansate de el si va chema metoda join.
+Programul va trece mai departe dupa ce toate threads de L2 s-au terminat si
+atunci L1 poate scrie si el in fisier.
+
+Scrierea in fisiere:
+
+Pentru scrierea in fisiere si pentru a evita accesul concurential am ales sa
+implementez o methoda statica de scrierecare va fi sincornizat cu un lock
+general pe care thread-urile vor threbui sa il obtina inainte de a scrie.
